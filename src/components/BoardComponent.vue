@@ -14,6 +14,8 @@ import { ref } from 'vue'
 
 export default {
     setup() {
+        //the idea is that these constants (colors, imageFormat and boardSizes) 
+        //can be retrieved from an API instead and be passed in appropriate components as props
         const colors = ref([
             '#d2691d',
             '#fcc0cb',
