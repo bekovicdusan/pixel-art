@@ -1,6 +1,9 @@
 import { reactive } from 'vue'
 import html2canvas from 'html2canvas'
 
+//created an external store file in order to enable it through the entire app
+//if I had only used a single component for the entire project, then this would not be necessary
+
 const state = reactive({
     boardSize: '12',
     board: new Array(12),
@@ -11,6 +14,7 @@ const state = reactive({
 })
 
 const methods = {
+    //handles selection from color pallette
     selectColor (e) {
         const allColors = document.querySelectorAll('.pallete-color')
         allColors.forEach(item => {
@@ -20,6 +24,7 @@ const methods = {
 
         state.selectedColor = e.target.attributes.color.value.substring(1)
     },
+    //handles changes in board size
     chooseBoardSize (e) {
         let currentSelection = e.target.value
         state.boardSize = currentSelection
@@ -29,6 +34,7 @@ const methods = {
             item.classList = ['tile color-fff']
         })
     },
+    //handles selection of painting tool
     choosePaintTool (e) {
         state.selectedTool = e.target.value
         document.querySelector('.tiles-wrapper').classList = ['tiles-wrapper']
@@ -39,9 +45,11 @@ const methods = {
             document.querySelector('.tiles-wrapper').classList.add('fill')
         }
     },
+    //handles desired image format
     chooseImageType (e) {
         state.chosenImgType = e.target.value
     },
+    //handles coloring of a single tile
     colorTile (e) {
         if (state.selectedTool === 'single-tile') {
             e.target.classList = ['tile']
@@ -50,6 +58,7 @@ const methods = {
             methods.fillTiles(e.target)
         }
     },
+    //handles coloring an area of neighbouring pixels
     fillTiles (el) {
         state.targetColor = el.classList[1].split('-')[1]
 
@@ -58,6 +67,7 @@ const methods = {
 
         methods.through(originX, originY);
     },
+    //recursive function that checks and colors neighbouring tiles
     through (originX, originY) {
         const tileToColor = document.querySelector(`.tile-row[rowLocation='${originY}'] .tile[location='${originX}']`)
         tileToColor.classList = [`tile color-${state.selectedColor}`]
@@ -88,10 +98,11 @@ const methods = {
             }
         }
     },
+    //handles download
     downloadImage () {
         const pixelArt = document.getElementById('pixel-art')
-        pixelArt.classList = [`tiles-wrapper ${state.selectedTool} no-border`]
-        html2canvas(pixelArt).then(canvas => {
+        pixelArt.classList = [`tiles-wrapper ${state.selectedTool} no-border`] //temporarily remove borders so as to not show on the downloaded picture (optional, could be removed)
+        html2canvas(pixelArt).then(canvas => { //here is the 3rd party library that helps convert html element into canvas
             const downloadLink = document.createElement('a')
 
             if (state.chosenImgType === 'png') {
@@ -106,7 +117,7 @@ const methods = {
             }
 
             downloadLink.click()
-            pixelArt.classList = [`tiles-wrapper ${state.selectedTool}`]
+            pixelArt.classList = [`tiles-wrapper ${state.selectedTool}`] //returning borders
         })
     }
 }
